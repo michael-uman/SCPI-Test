@@ -5,6 +5,7 @@ import visa
 import time
 import usb.core
 import usb.util
+import sys
 
 
 class BK9131B:
@@ -14,6 +15,7 @@ class BK9131B:
     """
     device = None
     dev_id = None
+    verbose = False
 
     def __init__(self, id):
         self.device = visa.ResourceManager().open_resource(id)
@@ -53,6 +55,8 @@ class BK9131B:
         return int(chanNum[2])
 
     def setChannel(self, chan: int):
+        if self.verbose:
+            print("DEBUG : Setting channel to {}".format(chan), file=sys.stderr)
         if 0 < chan < 4:
             self.device.write("INST CH{}".format(chan))
         else:
@@ -66,4 +70,6 @@ class BK9131B:
     def setVoltage(self, v: int, chan=None):
         if chan is not None:
             self.setChannel(chan)
+        if self.verbose:
+            print("DEBUG : Setting voltage to {}".format(v), file=sys.stderr)
         self.device.write("VOLTAGE {}".format(v))
